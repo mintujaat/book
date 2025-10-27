@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📚 Book Library</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      background: #f8fafc;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+    .logo {
+      height: 50px;
+      object-fit: contain;
+    }
+    h2 {
+      font-weight: 700;
+      color: #333;
+    }
+    .section-title {
+      font-weight: 600;
+      font-size: 1.4rem;
+      margin: 25px 0 15px;
+      border-left: 5px solid #0d6efd;
+      padding-left: 10px;
+      color: #0d6efd;
+    }
+    .book-card {
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+      transition: all 0.25s ease;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .book-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+    .book-cover {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+    .book-body {
+      padding: 15px;
+      text-align: center;
+    }
+    .book-body h6 {
+      margin: 0;
+      font-weight: 600;
+      color: #333;
+    }
+    .book-body p {
+      color: #666;
+      margin: 5px 0 0;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <img id="siteLogo" class="logo" src="" alt="Logo">
+    </div>
+    <h2>Book Library</h2>
+  </header>
+
+  <div class="container">
+    <div>
+      <h4 class="section-title">🔥 Hot Books</h4>
+      <div id="hotBooks" class="row g-3"></div>
+    </div>
+
+    <div>
+      <h4 class="section-title">📚 All Books</h4>
+      <div id="allBooks" class="row g-3"></div>
+    </div>
+  </div>
+
+  <!-- FIREBASE + LOGIC -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtyTzP8p26_QZQ2tk3KGsg5pZXU-nEY9Q",
+      authDomain: "books-e1b53.firebaseapp.com",
+      projectId: "books-e1b53",
+      storageBucket: "books-e1b53.firebasestorage.app",
+      messagingSenderId: "206852333319",
+      appId: "1:206852333319:web:7c37f760db3cdba21c2fa2",
+      measurementId: "G-J1KG00X7D2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const logo = document.getElementById('siteLogo');
+    const hotBooks = document.getElementById('hotBooks');
+    const allBooks = document.getElementById('allBooks');
+
+    // ---- Load Logo ----
+    const logoRef = doc(db, "settings", "logo");
+    onSnapshot(logoRef, (snap) => {
+      if (snap.exists()) {
+        logo.src = snap.data().logo_url || "";
+      }
+    });
+
+    // ---- Load Books ----
+    const booksRef = collection(db, "books");
+    onSnapshot(booksRef, (snapshot) => {
+      hotBooks.innerHTML = "";
+      allBooks.innerHTML = "";
+
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const bookId = docSnap.id;
+        const card = `
+          <div class="col-md-3">
+            <div class="book-card" onclick="window.location.href='reader.html?id=${bookId}'">
+              <img src="${data.cover_url}" class="book-cover" alt="Cover">
+              <div class="book-body">
+                <h6>${data.title}</h6>
+                <p>${data.author}</p>
+              </div>
+            </div>
+          </div>
+        `;
+        if (data.isHot) hotBooks.innerHTML += card;
+        allBooks.innerHTML += card;
+      });
+    });
+  </script>
+</body>
+</html>
