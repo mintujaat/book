@@ -3,181 +3,87 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>📖 Reader — Real Book (Hardcover)</title>
+  <title>📖 Reader</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <style>
-    :root{
-      --bg:#e9eef6;
-      --book-bg:#f6f6f5;
-      --page-bg:#fffdf8;
-      --page-width:420px;
-      --page-height:620px;
-      --gutter:36px;
-      --spine-width:40px;
-      --hardcover:#3b5b9a;
-    }
-    html,body{height:100%;margin:0;background:var(--bg);font-family: "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing:antialiased;}
-    .wrap{max-width:1280px;margin:18px auto;padding:12px;}
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
-    header h1{font-size:1.25rem;margin:0;color:#07204a;}
-    header p{margin:0;color:#556072;}
-
-    /* Stage with hardcover backdrop */
-    .stage-wrap {
-      display:flex;
-      justify-content:center;
-      align-items:flex-start;
-      gap:20px;
-      min-height: calc(100vh - 160px);
-      padding-top:10px;
+    :root {
+      --bg: #e9eef6;
+      --content-bg: #fff;
+      --text-color: #1a1a1a;
     }
 
-    .hardcover {
-      background: linear-gradient(180deg, rgba(0,0,0,0.04), rgba(255,255,255,0.02));
-      border-radius: 10px;
-      padding: 22px;
-      box-shadow: 0 20px 60px rgba(2,6,23,0.18);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      position: relative;
+    body {
+      background: var(--bg);
+      font-family: "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      margin: 0;
+      padding: 0;
     }
 
-    /* Spine (left edge) */
-    .spine {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: var(--spine-width);
-      height: 100%;
-      background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(255,255,255,0.02));
-      border-top-left-radius:10px;
-      border-bottom-left-radius:10px;
-      box-shadow: inset -6px 0 12px rgba(0,0,0,0.06);
-      display:flex; align-items:center; justify-content:center;
-      transform: translateX(-22px);
-    }
-    .spine .label { writing-mode: vertical-rl; transform: rotate(180deg); color:#fff; font-weight:700; font-size:0.9rem; text-shadow:0 1px 0 rgba(0,0,0,0.2);}
-    .hardcover::before{
-      content:'';
-      position:absolute; inset:0; border-radius:10px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
-      pointer-events:none;
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: var(--content-bg);
+      padding: 40px 50px;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
     }
 
-    .book-stage {
-      display:flex;
-      gap:var(--gutter);
-      align-items:center;
-      justify-content:center;
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.25em;
+      color: #07204a;
+      font-weight: 700;
     }
 
-    .page-frame {
-      width: var(--page-width);
-      height: var(--page-height);
-      perspective: 2200px;
-      position: relative;
-      background: transparent;
+    .author {
+      color: #606a80;
+      font-size: 0.95rem;
+      margin-bottom: 1.5em;
     }
 
-    .page {
-      position:absolute;
-      inset:0;
-      background: var(--page-bg);
-      border-radius: 6px;
-      padding: 30px 34px;
-      box-sizing: border-box;
-      box-shadow: 0 8px 20px rgba(12,20,40,0.08);
-      overflow: hidden;
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden;
-      transform-style: preserve-3d;
-      display:flex; flex-direction:column; gap:12px;
+    .content {
+      white-space: pre-wrap;
+      font-size: 1.1rem;
+      line-height: 1.75;
+      color: var(--text-color);
     }
 
-    .page .meta{font-size:0.85rem;color:#6b7280;}
-    .page .content{flex:1; font-size:1rem; line-height:1.6; color:#111827; overflow:hidden;}
-
-    /* edge gradient to mimic page edge */
-    .page::after{
-      content:'';
-      position:absolute;
-      right:-26px;
-      top:0;
-      width:26px;
-      height:100%;
-      background: linear-gradient(to right, rgba(0,0,0,0.02), rgba(0,0,0,0.06));
-      border-radius:0 8px 8px 0;
-      pointer-events:none;
+    .footer {
+      text-align: center;
+      color: #888;
+      margin-top: 40px;
+      font-size: 0.85rem;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
     }
 
-    .left .page::after{ right:-26px; transform: none; }
-    .right .page::after{ left:-26px; right:auto; transform: none; background: linear-gradient(to left, rgba(0,0,0,0.02), rgba(0,0,0,0.06)); }
-
-    /* flip animations */
-    .flipF { animation: flipForward 540ms cubic-bezier(.22,.9,.28,1) forwards; }
-    .flipB { animation: flipBackward 540ms cubic-bezier(.22,.9,.28,1) forwards; }
-
-    @keyframes flipForward {
-      0% { transform: rotateY(0deg); z-index:20; }
-      60% { transform: rotateY(-160deg); z-index:50; }
-      100% { transform: rotateY(-180deg); z-index:0; visibility:hidden; }
-    }
-    @keyframes flipBackward {
-      0% { transform: rotateY(-180deg); visibility:visible; z-index:0; }
-      60% { transform: rotateY(-20deg); z-index:50; }
-      100% { transform: rotateY(0deg); z-index:20; visibility:visible; }
-    }
-
-    .controls { text-align:center; margin-top:18px; display:flex; justify-content:center; gap:12px; }
-    .ctrl-btn { border:none; background:var(--hardcover); color:white; padding:10px 16px; border-radius:8px; cursor:pointer; font-weight:700; box-shadow:0 8px 20px rgba(8,40,100,0.16); }
-    .ctrl-btn:disabled { opacity:0.45; cursor:not-allowed; box-shadow:none; }
-
-    /* responsive */
-    @media (max-width:900px){
-      :root{ --page-width: 360px; --page-height: 560px; --gutter: 18px;}
-      .spine{ display:none; transform:none; }
-    }
-    @media (max-width:768px){
-      :root{ --page-width: 86vw; --page-height: calc(80vh - 120px); --gutter: 12px;}
-      .book-stage{ align-items:center; }
-      .left, .right { min-width: 0; }
+    @media (max-width: 768px) {
+      .container {
+        padding: 24px 22px;
+        margin: 20px auto;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+      .content {
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div>
-        <h1 id="title">Loading book…</h1>
-        <p id="author"></p>
-      </div>
-      <div>
-        <small id="position" style="color:#556072"></small>
-      </div>
-    </header>
-
-    <div class="stage-wrap">
-      <div class="hardcover" id="hardcover">
-        <div class="spine"><div class="label" id="spineLabel">BOOK</div></div>
-        <div class="book-stage" id="bookStage">
-          <div id="leftFrame" class="page-frame" aria-hidden="true"></div>
-          <div id="rightFrame" class="page-frame" aria-hidden="true"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="controls">
-      <button id="prev" class="ctrl-btn">⬅ Prev</button>
-      <button id="next" class="ctrl-btn">Next ➡</button>
-    </div>
+  <div class="container">
+    <h1 id="title">Loading book…</h1>
+    <div class="author" id="author"></div>
+    <div class="content" id="content">Please wait…</div>
+    <div class="footer">📘 End of Book</div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
     import { getFirestore, doc, getDoc, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
-    // Firebase config (unchanged)
     const firebaseConfig = {
       apiKey: "AIzaSyCtyTzP8p26_QZQ2tk3KGsg5pZXU-nEY9Q",
       authDomain: "books-e1b53.firebaseapp.com",
@@ -187,40 +93,36 @@
       appId: "1:206852333319:web:7c37f760db3cdba21c2fa2",
       measurementId: "G-J1KG00X7D2"
     };
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // DOM
     const params = new URLSearchParams(window.location.search);
     const bookId = params.get('id');
     const titleEl = document.getElementById('title');
     const authorEl = document.getElementById('author');
-    const leftFrame = document.getElementById('leftFrame');
-    const rightFrame = document.getElementById('rightFrame');
-    const prevBtn = document.getElementById('prev');
-    const nextBtn = document.getElementById('next');
-    const positionEl = document.getElementById('position');
-    const spineLabel = document.getElementById('spineLabel');
+    const contentEl = document.getElementById('content');
 
-    if (!bookId) { alert('Book ID missing (use ?id=...)'); throw new Error('missing id'); }
+    if (!bookId) {
+      contentEl.textContent = '❌ Book ID missing. Use ?id=BOOK_ID in URL.';
+      throw new Error('Missing book ID');
+    }
 
-    // state
-    let allText = '';           // full merged text
-    let pages = [];             // array of strings (200 words each)
-    let currentIndex = 0;       // index in pages
-    let animating = false;
-
-    // load book (subcollection preferred, fallback to pages array)
     async function loadBook() {
       const bookRef = doc(db, 'books', bookId);
       const snap = await getDoc(bookRef);
-      if (!snap.exists()) { alert('Book not found'); return; }
-      const data = snap.data();
-      titleEl.textContent = data.title || 'Untitled';
-      authorEl.textContent = data.author ? 'By ' + data.author : '';
-      spineLabel.textContent = (data.title || 'BOOK').slice(0, 18);
+      if (!snap.exists()) {
+        contentEl.textContent = '❌ Book not found.';
+        return;
+      }
 
-      // try pages subcollection
+      const data = snap.data();
+      titleEl.textContent = data.title || 'Untitled Book';
+      authorEl.textContent = data.author ? `By ${data.author}` : '';
+
+      let allText = '';
+
+      // Try to read from subcollection first
       try {
         const pagesCol = collection(db, `books/${bookId}/pages`);
         const q = query(pagesCol, orderBy('pageNumber'));
@@ -230,174 +132,23 @@
           allText = arr.join('\n\n');
         }
       } catch (e) {
-        console.warn('subcollection read failed', e);
+        console.warn('Subcollection read failed', e);
+      }
+
+      // Fallback: check if book has inline pages array
+      if (!allText && Array.isArray(data.pages)) {
+        allText = data.pages.map(p => p.content || '').filter(Boolean).join('\n\n');
       }
 
       if (!allText) {
-        if (Array.isArray(data.pages)) {
-          allText = data.pages.map(p => p.content || '').filter(Boolean).join('\n\n');
-        }
+        allText = '⚠ No content available for this book.';
       }
 
-      if (!allText) {
-        alert('No content available for this book.');
-      }
+      // Render plain text
+      contentEl.textContent = allText;
     }
 
-    // split full text into 200-word pages
-    function splitToWordPages(wordLimit = 200) {
-      const words = allText.split(/\s+/).filter(Boolean);
-      pages = [];
-      for (let i = 0; i < words.length; i += wordLimit) {
-        pages.push(words.slice(i, i + wordLimit).join(' '));
-      }
-      if (pages.length === 0) pages = [''];
-    }
-
-    // create page HTML
-    function pageHtml(text, pageNumber) {
-      return `<div class="page"><div class="meta">Page ${pageNumber}</div><div class="content">${escapeHtml(text).replace(/\n/g,'<br/>')}</div></div>`;
-    }
-    function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;'); }
-
-    // render spread (2-up desktop, 1-up mobile)
-    function render() {
-      const mobile = window.innerWidth <= 768;
-      leftFrame.innerHTML = ''; rightFrame.innerHTML = '';
-      if (mobile) {
-        leftFrame.style.display = 'none';
-        rightFrame.style.display = 'block';
-        rightFrame.innerHTML = pageHtml(pages[currentIndex] || '', currentIndex + 1);
-      } else {
-        leftFrame.style.display = 'block';
-        rightFrame.style.display = 'block';
-        // ensure left page index is even for nice spreads: left = even index
-        if (currentIndex % 2 === 1) currentIndex = Math.max(0, currentIndex - 1);
-        leftFrame.innerHTML = pageHtml(pages[currentIndex] || '', currentIndex + 1);
-        rightFrame.innerHTML = pageHtml(pages[currentIndex + 1] || '', currentIndex + 2);
-      }
-      updateUI();
-    }
-
-    function updateUI(){
-      const total = pages.length;
-      positionEl.textContent = `Page ${Math.min(currentIndex + 1, total)} / ${total}`;
-      const perView = window.innerWidth <= 768 ? 1 : 2;
-      prevBtn.disabled = currentIndex <= 0 || animating;
-      nextBtn.disabled = currentIndex + perView >= total || animating;
-    }
-
-    // page flips (with classic 3D animation)
-    function next() {
-      if (animating) return;
-      const perView = window.innerWidth <= 768 ? 1 : 2;
-      if (currentIndex + perView >= pages.length) return;
-      animating = true;
-
-      const mobile = perView === 1;
-      if (mobile) {
-        const p = rightFrame.querySelector('.page');
-        if (!p) { animating = false; return; }
-        p.classList.add('flipF');
-        p.addEventListener('animationend', () => {
-          currentIndex += 1;
-          render();
-          animating = false;
-        }, { once: true });
-      } else {
-        // animate right page forward (clone approach to avoid DOM flicker)
-        const p = rightFrame.querySelector('.page');
-        if (!p) { animating = false; return; }
-        const clone = p.cloneNode(true);
-        clone.style.position = 'absolute';
-        clone.style.top = rightFrame.offsetTop + 'px';
-        clone.style.left = rightFrame.offsetLeft + 'px';
-        clone.style.width = rightFrame.clientWidth + 'px';
-        clone.style.height = rightFrame.clientHeight + 'px';
-        clone.style.zIndex = 9999;
-        rightFrame.appendChild(clone);
-        clone.classList.add('flipF');
-        clone.addEventListener('animationend', () => {
-          currentIndex = Math.min(pages.length - 1, currentIndex + 2);
-          render();
-          animating = false;
-        }, { once: true });
-      }
-    }
-
-    function prev() {
-      if (animating) return;
-      const perView = window.innerWidth <= 768 ? 1 : 2;
-      if (currentIndex <= 0) return;
-      animating = true;
-
-      const mobile = perView === 1;
-      if (mobile) {
-        // flip back in mobile: render previous, then animate flip-back for effect
-        currentIndex = Math.max(0, currentIndex - 1);
-        render();
-        const p = rightFrame.querySelector('.page');
-        if (!p) { animating = false; return; }
-        p.classList.add('flipB');
-        p.addEventListener('animationend', () => animating = false, { once: true });
-      } else {
-        // desktop: animate left page back
-        const p = leftFrame.querySelector('.page');
-        if (!p) { animating = false; return; }
-        const clone = p.cloneNode(true);
-        leftFrame.appendChild(clone);
-        clone.classList.add('flipB');
-        clone.addEventListener('animationend', () => {
-          currentIndex = Math.max(0, currentIndex - 2);
-          render();
-          animating = false;
-        }, { once: true });
-      }
-    }
-
-    // interactions
-    nextBtn.addEventListener('click', next);
-    prevBtn.addEventListener('click', prev);
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === 'PageDown') next();
-      if (e.key === 'ArrowLeft' || e.key === 'PageUp') prev();
-    });
-
-    // swipe
-    let sx=0, sy=0;
-    const stage = document.getElementById('bookStage');
-    stage.addEventListener('touchstart', (ev) => { sx = ev.touches[0].clientX; sy = ev.touches[0].clientY; }, {passive:true});
-    stage.addEventListener('touchend', (ev) => {
-      const dx = ev.changedTouches[0].clientX - sx;
-      const dy = ev.changedTouches[0].clientY - sy;
-      if (Math.abs(dx) > 40 && Math.abs(dy) < 80) {
-        if (dx < 0) next(); else prev();
-      }
-    });
-
-    // handle resize: rebuild pages (index safe-clamp)
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        const oldPage = currentIndex;
-        splitToWordPages(200); // rebuild pages (word chunks still 200)
-        currentIndex = Math.min(currentIndex, Math.max(0, pages.length - 1));
-        // keep spread aligned: if desktop and odd index, decrement to even
-        if (window.innerWidth > 768 && currentIndex % 2 === 1) currentIndex--;
-        render();
-      }, 200);
-    });
-
-    // init
-    (async function init(){
-      await loadBook();
-      splitToWordPages(200); // 200 words per page
-      // align for desktop spreads
-      if (window.innerWidth > 768 && currentIndex % 2 === 1) currentIndex--;
-      render();
-    })();
+    loadBook();
   </script>
 </body>
 </html>
